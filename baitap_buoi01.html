@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bài tập về nhà · Buổi 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1F2D3A; --teal: #1F4E5F; --amber: #F2A541; --amber-soft: #FBE3BC;
+    --red: #D64933; --green: #3E8E63; --tint: #EAF2F4; --muted: #6F8E9B; --bg: #F7FAFB; --card: #FFFFFF;
+    --zh: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    --vi: "Be Vietnam Pro", "Segoe UI", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--vi); line-height: 1.55; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 20px 16px 60px; }
+  header { background: var(--teal); color: #fff; border-radius: 18px; padding: 22px; position: relative; overflow: hidden; }
+  header::after { content: ""; position: absolute; right: -60px; top: -70px; width: 150px; height: 150px; border-radius: 50%; background: var(--amber); }
+  header .k { font-family: var(--zh); color: var(--amber-soft); font-size: 14px; position: relative; z-index: 1; }
+  header h1 { margin: 2px 0; font-size: 26px; position: relative; z-index: 1; }
+  header p { margin: 0; opacity: .9; font-size: 14px; position: relative; z-index: 1; }
+  .name { margin: 14px 0 0; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .name input { flex: 1; min-width: 180px; }
+
+  section.part { background: var(--card); border-radius: 16px; box-shadow: 0 4px 18px rgba(31,78,95,.08); padding: 18px; margin-top: 18px; }
+  .part h2 { margin: 0 0 4px; font-size: 18px; color: var(--teal); }
+  .part .guide { margin: 0 0 14px; color: var(--muted); font-size: 14px; }
+  .zh { font-family: var(--zh); }
+
+  input[type=text] { font: 18px var(--zh); padding: 8px 10px; border: 2px solid #D5E3E8; border-radius: 10px; width: 100%; background: #fff; color: var(--ink); }
+  input[type=text]:focus { outline: none; border-color: var(--teal); }
+  input.ok { border-color: var(--green); background: #EEF8F2; }
+  input.bad { border-color: var(--red); background: #FDF0ED; }
+
+  .grid1 { display: grid; grid-template-columns: 90px 1fr 1.4fr; gap: 8px 10px; align-items: center; }
+  .grid1 .h { font-size: 12px; font-weight: 700; color: var(--muted); }
+  .clue { font-family: var(--zh); font-size: 20px; font-weight: 700; color: var(--teal); }
+  .clue small { display: block; font: 400 12px var(--vi); color: var(--muted); }
+  .sub { margin: 18px 0 8px; font-weight: 700; font-size: 15px; }
+
+  .pool { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px; background: var(--tint); border-radius: 12px; min-height: 58px; }
+  .tile { font: 700 24px var(--zh); width: 46px; height: 46px; border-radius: 10px; border: 2px solid #C9D9DF; background: #fff; color: var(--ink); cursor: pointer; }
+  .tile.sel { border-color: var(--amber); background: var(--amber-soft); }
+  .tile.ok { border-color: var(--green); background: #EEF8F2; }
+  .tile.bad { border-color: var(--red); background: #FDF0ED; }
+  .bins { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+  .bin { border: 2px dashed #C9D9DF; border-radius: 12px; min-height: 104px; padding: 6px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .bin .r { font: 700 20px var(--zh); color: var(--red); }
+  .bin .tiles { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; }
+  .bin .tile { width: 38px; height: 38px; font-size: 20px; }
+  .bin.hot { border-color: var(--amber); background: #FFF9EE; }
+
+  .passage { font: 20px/2.4 var(--zh); }
+  .blank { display: inline-block; min-width: 72px; padding: 0 8px; margin: 0 2px; border-bottom: 2px solid var(--teal); text-align: center; cursor: pointer; color: var(--teal); font-weight: 700; line-height: 1.6; border-radius: 6px 6px 0 0; }
+  .blank .n { font: 12px var(--vi); color: var(--muted); }
+  .blank.active { background: var(--amber-soft); }
+  .blank.ok { border-color: var(--green); color: var(--green); }
+  .blank.bad { border-color: var(--red); color: var(--red); }
+  .bank { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; position: sticky; top: 0; background: var(--card); padding: 8px 0; z-index: 2; }
+  .word { font: 700 18px var(--zh); padding: 6px 12px; border-radius: 999px; border: 2px solid #C9D9DF; background: #fff; cursor: pointer; color: var(--ink); }
+  .word.used { opacity: .35; }
+
+  .guess { display: grid; grid-template-columns: 64px 1fr 1fr; gap: 8px 10px; align-items: center; }
+  .guess .big { font: 700 40px var(--zh); color: var(--teal); text-align: center; }
+  .guess input { font-family: var(--vi); font-size: 15px; }
+  .ans7 { display: none; margin-top: 12px; }
+  .ans7 table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .ans7 td, .ans7 th { border-bottom: 1px solid #E5EEF1; padding: 6px 4px; text-align: left; }
+  .ans7 .zh { font-size: 20px; font-weight: 700; }
+
+  .row-btn { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; align-items: center; }
+  .btn { border: none; border-radius: 12px; padding: 10px 16px; font: 600 15px var(--vi); cursor: pointer; background: var(--teal); color: #fff; }
+  .btn.ghost { background: var(--tint); color: var(--teal); }
+  .result { font-weight: 700; }
+  .result.good { color: var(--green); }
+  .result.mid { color: #B7791F; }
+  .note { font-size: 13px; color: var(--muted); margin-top: 8px; }
+
+  section.part.finish { background: var(--teal); color: #fff; }
+  .finish h2 { color: #fff; }
+  .finish textarea { width: 100%; min-height: 150px; border-radius: 12px; border: none; padding: 12px; font: 14px var(--vi); }
+  .finish .btn { background: var(--amber); color: var(--ink); }
+
+  .sent { font: 21px var(--zh); display: flex; flex-wrap: wrap; gap: 0; margin: 4px 0 6px; }
+  .ch { border: none; background: transparent; font: 21px var(--zh); color: var(--ink); padding: 2px 2px; border-radius: 6px; cursor: pointer; }
+  .ch.pick { background: var(--amber-soft); outline: 2px solid var(--amber); }
+  .ch.ok { background: #DDF0E5; outline: 2px solid var(--green); }
+  .ch.bad { background: #FBE1DC; outline: 2px solid var(--red); }
+  .fixrow { display: grid; grid-template-columns: 110px 1fr; gap: 8px; align-items: center; margin-bottom: 18px; }
+  .fixrow input { font-size: 15px; }
+  .fixrow .lab { font-size: 13px; color: var(--muted); }
+  .qnum { font-weight: 700; color: var(--teal); margin-right: 6px; }
+  .choose { margin-bottom: 14px; }
+  .choose .q { font: 20px var(--zh); margin-bottom: 6px; }
+  .choose .gap { display: inline-block; min-width: 40px; border-bottom: 2px solid var(--teal); text-align: center; color: var(--teal); font-weight: 700; }
+  .opt { font: 700 22px var(--zh); padding: 4px 14px; border-radius: 10px; border: 2px solid #C9D9DF; background: #fff; cursor: pointer; margin-right: 6px; color: var(--ink); }
+  .opt.pick { border-color: var(--amber); background: var(--amber-soft); }
+  .opt.ok { border-color: var(--green); background: #DDF0E5; }
+  .opt.bad { border-color: var(--red); background: #FBE1DC; }
+  textarea.write { width: 100%; min-height: 60px; font: 18px var(--zh); padding: 8px 10px; border: 2px solid #D5E3E8; border-radius: 10px; margin: 4px 0 14px; }
+  .pair { font: 700 18px var(--zh); color: var(--teal); }
+  .samples { display: none; background: var(--tint); border-radius: 12px; padding: 10px 14px; font: 17px/1.9 var(--zh); }
+  @media (max-width: 520px) {
+    .bins { grid-template-columns: repeat(2, 1fr); }
+    .grid1 { grid-template-columns: 70px 1fr 1fr; }
+    .guess { grid-template-columns: 52px 1fr; }
+    .guess .big { grid-row: span 2; font-size: 34px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="k">第一课 · 作业</div>
+    <h1>Bài tập về nhà · Buổi 1</h1>
+    <p>Ôn từ vựng qua chữ Hán · 7 phần · khoảng 30 phút</p>
+  </header>
+  <div class="name"><label for="who"><b>Họ tên:</b></label><input type="text" id="who" placeholder="Nhập tên" style="font-family:var(--vi);font-size:16px"></div>
+
+  <!-- PART 1 -->
+  <section class="part" id="p1">
+    <h2>Phần 1. Từ bộ phận chữ, viết ra từ trong bài</h2>
+    <p class="guide">Gõ chữ Hán bằng bàn phím tiếng Trung (pinyin) trên điện thoại hoặc máy tính.</p>
+    <div class="sub">A. Ghép các bộ phận thành chữ, rồi viết từ trong bài có chữ đó</div>
+    <div class="grid1" id="p1a"><div class="h">Bộ phận</div><div class="h">Chữ</div><div class="h">Từ trong bài</div></div>
+    <div class="sub">B. Nhìn gợi ý bộ thủ và nghĩa, viết từ</div>
+    <div class="grid1" id="p1b" style="grid-template-columns: 90px 1fr"><div class="h">Gợi ý</div><div class="h">Từ</div></div>
+    <div class="row-btn"><button class="btn" id="c1">Kiểm tra</button><span class="result" id="r1"></span></div>
+  </section>
+
+  <!-- PART 2 -->
+  <section class="part" id="p2">
+    <h2>Phần 2. Xếp chữ vào đúng bộ thủ</h2>
+    <p class="guide">Chạm vào một chữ, rồi chạm vào ô bộ thủ phù hợp. Chạm vào chữ đã xếp để đưa chữ về lại.</p>
+    <div class="pool" id="pool"></div>
+    <div class="bins" id="bins"></div>
+    <div class="row-btn"><button class="btn" id="c2">Kiểm tra</button><button class="btn ghost" id="reset2">Làm lại</button><span class="result" id="r2"></span></div>
+  </section>
+
+  <!-- PART 3: fix wrong char -->
+  <section class="part" id="pfix">
+    <h2>Phần 3. Tìm và sửa chữ viết sai</h2>
+    <p class="guide">Mỗi câu có <b>một chữ sai</b>. Chạm vào chữ sai, gõ chữ đúng, rồi viết ngắn lý do (dựa vào bộ thủ).</p>
+    <div id="fixList"></div>
+    <div class="row-btn"><button class="btn" id="c5">Kiểm tra</button><span class="result" id="r5"></span></div>
+  </section>
+
+  <!-- PART 4: choose -->
+  <section class="part" id="pchoose">
+    <h2>Phần 4. Hai chữ có cùng phần âm, chọn chữ đúng</h2>
+    <p class="guide">Các chữ đọc gần giống nhau. Nhìn bộ thủ để chọn đúng chữ.</p>
+    <div id="chooseList"></div>
+    <div class="row-btn"><button class="btn" id="c6">Kiểm tra</button><span class="result" id="r6"></span></div>
+  </section>
+
+  <!-- PART 5 -->
+  <section class="part" id="p3">
+    <h2>Phần 5. Điền từ vào đoạn văn</h2>
+    <p class="guide">Chạm vào chỗ trống, rồi chạm vào từ phù hợp. Mỗi từ dùng một lần.</p>
+    <div class="bank" id="bank"></div>
+    <div class="passage" id="passage"></div>
+    <div class="row-btn"><button class="btn" id="c3">Kiểm tra</button><button class="btn ghost" id="reset3">Làm lại</button><span class="result" id="r3"></span></div>
+  </section>
+
+  <!-- PART 6: write sentences -->
+  <section class="part" id="psent">
+    <h2>Phần 6. Đặt một câu dùng cả hai từ</h2>
+    <p class="guide">Viết bằng chữ Hán. Giáo viên sẽ chấm phần này. Sau khi xem câu mẫu, câu đã viết sẽ bị khóa.</p>
+    <div id="sentList"></div>
+    <div class="row-btn"><button class="btn" id="c7">Xem câu mẫu</button></div>
+    <div class="samples" id="samples"></div>
+  </section>
+
+  <!-- PART 7 -->
+  <section class="part" id="p4">
+    <h2>Phần 7. Thử thách: đoán chữ chưa học</h2>
+    <p class="guide">Đoán <b>nghĩa</b> dựa vào bộ thủ, đoán <b>cách đọc</b> dựa vào phần còn lại. Đoán sai không sao, quan trọng là cách suy luận.</p>
+    <div class="guess" id="guess"></div>
+    <div class="row-btn"><button class="btn" id="c4">Xem đáp án</button><span class="note" style="margin:0">Sau khi xem đáp án, phần đoán sẽ bị khóa.</span></div>
+    <div class="ans7" id="ans7">
+      <table>
+        <tr><th>Chữ</th><th>Phần nghĩa</th><th>Phần âm</th><th>Đọc · Nghĩa</th></tr>
+        <tr><td class="zh">烤</td><td>火 lửa</td><td>考 kǎo</td><td>kǎo · nướng (烤鸭)</td></tr>
+        <tr><td class="zh">迷</td><td>辶 đi</td><td>米 mǐ</td><td>mí · lạc, mê (迷路)</td></tr>
+        <tr><td class="zh">慌</td><td>忄 tim</td><td>荒 huāng</td><td>huāng · hoảng (慌张)</td></tr>
+        <tr><td class="zh">冻</td><td>冫 băng</td><td>东 dōng</td><td>dòng · đông cứng, lạnh cóng</td></tr>
+      </table>
+      <p class="note">烤 có bộ 火 đứng bên trái. Đây là cùng bộ lửa với 灬, chỉ khác hình dạng do vị trí trong chữ.</p>
+    </div>
+  </section>
+
+  <!-- FINISH -->
+  <section class="part finish">
+    <h2>Gửi kết quả cho giáo viên</h2>
+    <p style="margin:0 0 10px;font-size:14px">Làm xong 7 phần thì bấm nút dưới đây, sao chép kết quả rồi gửi cho giáo viên qua Zalo hoặc Messenger.</p>
+    <div class="row-btn" style="margin:0 0 10px"><button class="btn" id="make">Tạo kết quả</button><button class="btn" id="copy">Sao chép</button><span id="copied" style="font-size:14px"></span></div>
+    <textarea id="summary" readonly placeholder="Kết quả sẽ hiện ở đây"></textarea>
+  </section>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const norm = s => (s || "").replace(/[\s，。,.、！!？?]/g, "");
+const score = { p1: null, p2: null, p3: null, pfix: null, pchoose: null };
+
+// ---------- Part 1 ----------
+const P1A = [["自 + 心", "息", "作息"], ["走 + 干", "赶", "赶"], ["敖 + 灬", "熬", "熬夜"], ["忄 + 亡", "忙", "匆忙"], ["辶 + 甬", "通", "通勤"], ["宀 + 头", "实", "充实"]];
+const P1B = [["彳", "điều độ, có quy luật", "规律"], ["冫", "đúng giờ", "准时"], ["亻", "tiện thể", "顺便"], ["彳", "hiếm khi có", "难得"]];
+P1A.forEach(([c], i) => {
+  $("p1a").insertAdjacentHTML("beforeend", `<div class="clue">${c}</div><input type="text" id="a${i}c" maxlength="2"><input type="text" id="a${i}w" maxlength="4">`);
+});
+P1B.forEach(([r, m], i) => {
+  $("p1b").insertAdjacentHTML("beforeend", `<div class="clue">${r}<small>${m}</small></div><input type="text" id="b${i}" maxlength="4">`);
+});
+$("c1").onclick = () => {
+  let ok = 0, total = 0;
+  const mark = (el, right) => { el.classList.remove("ok", "bad"); el.classList.add(right ? "ok" : "bad"); total++; if (right) ok++; };
+  P1A.forEach(([, ch, w], i) => { mark($(`a${i}c`), norm($(`a${i}c`).value) === ch); mark($(`a${i}w`), norm($(`a${i}w`).value) === w); });
+  P1B.forEach(([, , w], i) => mark($(`b${i}`), norm($(`b${i}`).value) === w));
+  rec("p1", ok, total); showResult("r1", ok, total);
+};
+
+// ---------- Part 2 ----------
+const BINS = [["灬", ["熬", "热"]], ["走", ["赶", "起"]], ["忄/心", ["忙", "想"]], ["彳", ["律", "往"]], ["亻", ["便", "住"]], ["辶", ["通", "近"]], ["宀", ["实", "家"]], ["冫", ["准", "冷"]]];
+const CHARS = ["熬", "住", "近", "赶", "冷", "想", "律", "家", "热", "准", "起", "往", "便", "通", "忙", "实"];
+let placed = {}, selected = null;
+function render2() {
+  $("pool").innerHTML = CHARS.filter(c => !(c in placed)).map(c => `<button class="tile${selected === c ? " sel" : ""}" data-c="${c}">${c}</button>`).join("") || `<span style="color:var(--muted);font-size:14px;align-self:center">Đã xếp hết, bấm Kiểm tra.</span>`;
+  $("bins").innerHTML = BINS.map(([r], b) => `<div class="bin${selected ? " hot" : ""}" data-b="${b}"><div class="r">${r}</div><div class="tiles">${Object.keys(placed).filter(c => placed[c] === b).map(c => `<button class="tile" data-in="${c}">${c}</button>`).join("")}</div></div>`).join("");
+  document.querySelectorAll("#pool .tile").forEach(t => t.onclick = () => { selected = selected === t.dataset.c ? null : t.dataset.c; render2(); });
+  document.querySelectorAll(".bin").forEach(bn => bn.onclick = e => {
+    const back = e.target.closest("[data-in]");
+    if (back) { delete placed[back.dataset.in]; render2(); return; }
+    if (selected) { placed[selected] = +bn.dataset.b; selected = null; render2(); }
+  });
+}
+render2();
+$("c2").onclick = () => {
+  let ok = 0;
+  document.querySelectorAll(".bin").forEach(bn => {
+    const b = +bn.dataset.b;
+    bn.querySelectorAll(".tile").forEach(t => { const right = BINS[b][1].includes(t.dataset.in); t.classList.add(right ? "ok" : "bad"); if (right) ok++; });
+  });
+  rec("p2", ok, CHARS.length); showResult("r2", ok, CHARS.length);
+};
+$("reset2").onclick = () => { placed = {}; selected = null; $("r2").textContent = ""; render2(); };
+
+// ---------- Part 3 (passage) ----------
+const BANK = ["作息", "规律", "通勤", "赶", "熬夜", "匆忙", "准时", "顺便", "充实", "难得"];
+const KEY3 = ["作息", "规律", "通勤", "匆忙", "赶", "准时", "顺便", "熬夜", "难得", "充实"];
+const TEXT = "我是一个上班族。我的{0}很有{1}：每天六点起床，七点出门。我的{2}时间差不多一个小时，所以早上常常很{3}，有时候还得跑着{4}地铁。不过，我每天都八点{5}到公司。下班以后，我常常{6}去超市买菜。我很少{7}，因为第二天还要上班。上个周末我{8}休息两天，跟朋友去爬山、看电影，过得很{9}。";
+let fills = Array(10).fill(null), active = 0;
+function render3() {
+  $("bank").innerHTML = BANK.map(w => `<button class="word${fills.includes(w) ? " used" : ""}" data-w="${w}">${w}</button>`).join("");
+  $("passage").innerHTML = TEXT.replace(/\{(\d)\}/g, (_, n) => `<span class="blank${+n === active ? " active" : ""}" data-n="${n}">${fills[n] || `<span class="n">(${+n + 1})</span>`}</span>`);
+  document.querySelectorAll(".word").forEach(b => b.onclick = () => {
+    const w = b.dataset.w; const prev = fills.indexOf(w); if (prev > -1) fills[prev] = null;
+    fills[active] = w; const next = fills.findIndex(f => !f); active = next > -1 ? next : active; render3();
+  });
+  document.querySelectorAll(".blank").forEach(s => s.onclick = () => { const n = +s.dataset.n; if (active === n && fills[n]) fills[n] = null; active = n; render3(); });
+}
+render3();
+$("c3").onclick = () => {
+  let ok = 0;
+  document.querySelectorAll(".blank").forEach(s => { const n = +s.dataset.n; const right = fills[n] === KEY3[n]; s.classList.remove("active"); s.classList.add(right ? "ok" : "bad"); if (right) ok++; });
+  rec("p3", ok, 10); showResult("r3", ok, 10);
+};
+$("reset3").onclick = () => { fills = Array(10).fill(null); active = 0; $("r3").textContent = ""; render3(); };
+
+// ---------- Part 3 (fix) ----------
+const FIX = [
+  { s: "我的昨息时间很固定。", wrong: "昨", right: "作" },
+  { s: "我的作息不太规津。", wrong: "津", right: "律" },
+  { s: "我匆匆忘忘地吃了早饭。", wrong: "忘", right: "忙" },
+  { s: "我一般八点淮时到公司。", wrong: "淮", right: "准" },
+  { s: "下班以后我顺使去超市。", wrong: "使", right: "便" },
+  { s: "我昨天敖夜了。", wrong: "敖", right: "熬" },
+];
+const picked = Array(FIX.length).fill(null);
+$("fixList").innerHTML = FIX.map((f, i) => `<div><div style="display:flex;align-items:baseline"><span class="qnum">${i + 1}.</span><div class="sent" id="fs${i}">${[...f.s].map((c, k) => /[，。]/.test(c) ? `<span>${c}</span>` : `<button class="ch" data-i="${i}" data-k="${k}">${c}</button>`).join("")}</div></div>
+  <div class="fixrow"><span class="lab">Chữ đúng</span><input type="text" id="fx${i}" maxlength="1"><span class="lab">Lý do</span><input type="text" id="fr${i}" placeholder="Lý do, dựa vào bộ thủ" style="font-family:var(--vi)"></div></div>`).join("");
+document.querySelectorAll(".ch").forEach(b => b.onclick = () => {
+  const i = +b.dataset.i; picked[i] = +b.dataset.k;
+  document.querySelectorAll(`#fs${i} .ch`).forEach(x => x.classList.toggle("pick", x === b));
+});
+$("c5").onclick = () => {
+  let ok = 0;
+  FIX.forEach((f, i) => {
+    document.querySelectorAll(`#fs${i} .ch`).forEach(x => x.classList.remove("ok", "bad"));
+    const btn = picked[i] != null ? document.querySelector(`#fs${i} .ch[data-k="${picked[i]}"]`) : null;
+    const found = btn && btn.textContent === f.wrong;
+    if (btn) btn.classList.add(found ? "ok" : "bad"); if (found) ok++;
+    const inp = $("fx" + i); const fixed = norm(inp.value) === f.right;
+    inp.classList.remove("ok", "bad"); inp.classList.add(fixed ? "ok" : "bad"); if (fixed) ok++;
+  });
+  rec("pfix", ok, FIX.length * 2); showResult("r5", ok, FIX.length * 2);
+};
+
+// ---------- Part 4 (choose) ----------
+const CHOOSE = [
+  ["今天是", "天，我们去公园吧。", ["晴", "情", "请"], "晴"],
+  ["", "问，超市在哪儿？", ["清", "请", "情"], "请"],
+  ["这个周末我很", "，没时间休息。", ["忙", "忘"], "忙"],
+  ["糟糕，我", "了带钥匙！", ["忙", "忘"], "忘"],
+  ["我吃", "了，不要了。", ["饱", "跑", "抱"], "饱"],
+  ["他每天早上去公园", "步。", ["饱", "跑", "抱"], "跑"],
+];
+const chosen = Array(CHOOSE.length).fill(null);
+$("chooseList").innerHTML = CHOOSE.map(([a, b, opts], i) => `<div class="choose"><div class="q"><span class="qnum">${i + 1}.</span>${a}<span class="gap" id="cg${i}">＿</span>${b}</div>${opts.map(o => `<button class="opt" data-i="${i}" data-o="${o}">${o}</button>`).join("")}</div>`).join("");
+document.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+  const i = +b.dataset.i; chosen[i] = b.dataset.o; $("cg" + i).textContent = b.dataset.o;
+  document.querySelectorAll(`.opt[data-i="${i}"]`).forEach(x => { x.classList.remove("ok", "bad"); x.classList.toggle("pick", x === b); });
+});
+$("c6").onclick = () => {
+  let ok = 0;
+  CHOOSE.forEach((c, i) => {
+    const b = chosen[i] ? document.querySelector(`.opt[data-i="${i}"][data-o="${chosen[i]}"]`) : null;
+    const right = chosen[i] === c[3]; if (right) ok++;
+    if (b) { b.classList.remove("pick"); b.classList.add(right ? "ok" : "bad"); }
+  });
+  rec("pchoose", ok, CHOOSE.length); showResult("r6", ok, CHOOSE.length);
+};
+
+// ---------- Part 6 (sentences) ----------
+const PAIRS = [["熬夜", "准时", ""], ["通勤", "赶", ""], ["难得", "充实", ""], ["作息", "规律", "dùng mẫu 以前……，现在……了"]];
+const SAMPLES = ["我昨天熬夜了，所以今天没能准时到公司。", "我的通勤时间很长，每天早上都得赶地铁。", "我难得休息一天，这一天过得很充实。", "以前我的作息不规律，现在规律了。"];
+$("sentList").innerHTML = PAIRS.map(([a, b, hint], i) => `<div><span class="qnum">${String.fromCharCode(97 + i)}.</span><span class="pair">${a} + ${b}</span>${hint ? ` <span class="note" style="display:inline">(${hint})</span>` : ""}<textarea class="write" id="sw${i}"></textarea></div>`).join("");
+$("c7").onclick = () => {
+  PAIRS.forEach((_, i) => $("sw" + i).readOnly = true);
+  $("samples").innerHTML = "<b style='font-family:var(--vi);font-size:14px'>Câu mẫu (câu của bạn có thể khác mà vẫn đúng):</b><br>" + SAMPLES.map((x, i) => `${String.fromCharCode(97 + i)}. ${x}`).join("<br>");
+  $("samples").style.display = "block"; $("c7").style.display = "none";
+};
+
+// ---------- Part 7 ----------
+const GUESS = ["烤", "迷", "慌", "冻"];
+$("guess").innerHTML = GUESS.map((c, i) => `<div class="big">${c}</div><input type="text" id="gm${i}" placeholder="Nghĩa đoán"><input type="text" id="gp${i}" placeholder="Cách đọc đoán (pinyin)">`).join("");
+$("c4").onclick = () => { GUESS.forEach((_, i) => { $("gm" + i).readOnly = true; $("gp" + i).readOnly = true; }); $("ans7").style.display = "block"; $("c4").style.display = "none"; };
+
+// ---------- helpers ----------
+function showResult(id, ok, total) {
+  const el = $(id); el.textContent = `Đúng ${ok}/${total}`;
+  el.className = "result " + (ok / total >= 0.8 ? "good" : "mid");
+  if (ok < total) el.textContent += " · sửa ô màu đỏ rồi bấm Kiểm tra lại";
+}
+function rec(k, ok, t) { if (!score[k]) score[k] = { first: [ok, t] }; score[k].last = [ok, t]; }
+const fmt = s => s ? `lần đầu ${s.first[0]}/${s.first[1]}, lần cuối ${s.last[0]}/${s.last[1]}` : "chưa làm";
+$("make").onclick = () => {
+  const name = $("who").value.trim() || "(chưa nhập tên)";
+  const g = GUESS.map((c, i) => `  ${c}: nghĩa "${$("gm" + i).value.trim() || "—"}", đọc "${$("gp" + i).value.trim() || "—"}"`).join("\n");
+  const reasons = FIX.map((f, i) => `  ${i + 1}. sửa thành "${$("fx" + i).value.trim() || "—"}", lý do: ${$("fr" + i).value.trim() || "—"}`).join("\n");
+  const sents = PAIRS.map(([a, b], i) => `  ${String.fromCharCode(97 + i)}. (${a} + ${b}) ${$("sw" + i).value.trim() || "—"}`).join("\n");
+  $("summary").value = `Bài tập về nhà Buổi 1 · ${name}\nPhần 1 (viết từ): ${fmt(score.p1)}\nPhần 2 (xếp bộ thủ): ${fmt(score.p2)}\nPhần 3 (sửa chữ sai): ${fmt(score.pfix)}\n${reasons}\nPhần 4 (chọn chữ): ${fmt(score.pchoose)}\nPhần 5 (điền đoạn văn): ${fmt(score.p3)}\nPhần 6 (đặt câu):\n${sents}\nPhần 7 (đoán chữ):\n${g}`;
+};
+$("copy").onclick = async () => {
+  if (!$("summary").value) $("make").click();
+  try { await navigator.clipboard.writeText($("summary").value); $("copied").textContent = "Đã sao chép ✓"; }
+  catch (e) { $("summary").select(); $("copied").textContent = "Hãy nhấn giữ để sao chép"; }
+};
+</script>
+</body>
+</html>
